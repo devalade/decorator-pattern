@@ -143,36 +143,101 @@ $$h(g(f(x))) = 2.80€$$
 transition: slide-left
 ---
 
-# En Code : Classes qui s'enveloppent
+# Le Code Étape par Étape
 
-```ts {monaco-run}
-// f(x) - Classe de base
+<div class="text-left">
+
+````md magic-move {lines: true}
+```js
+// Étape 1 : Classe de base
 class Cafe {
   prix() { return 2 }
   nom() { return "Café" }
 }
 
-// g(f(x)) - Décorateur Lait
+let c = new Cafe()
+c.prix()  // → 2
+```
+
+```js
+// Étape 2 : Premier décorateur
+class Cafe {
+  prix() { return 2 }
+  nom() { return "Café" }
+}
+
 class Lait {
-  constructor(c) { this.c = c }  // c = f(x)
-  prix() { return this.c.prix() + 0.5 }  // g(f(x))
+  constructor(cafe) {
+    this.cafe = cafe
+  }
+  prix() { return this.cafe.prix() + 0.5 }
+  nom() { return this.cafe.nom() + " + Lait" }
+}
+
+let c = new Cafe()
+c = new Lait(c)
+c.prix()  // → 2.5
+c.nom()   // → "Café + Lait"
+```
+
+```js
+// Étape 3 : On enchaîne !
+class Cafe {
+  prix() { return 2 }
+  nom() { return "Café" }
+}
+
+class Lait {
+  constructor(c) { this.c = c }
+  prix() { return this.c.prix() + 0.5 }
   nom() { return this.c.nom() + " + Lait" }
 }
 
-// h(g(f(x))) - Décorateur Sucre  
 class Sucre {
-  constructor(c) { this.c = c }  // c = g(f(x))
-  prix() { return this.c.prix() + 0.3 }  // h(g(f(x)))
+  constructor(c) { this.c = c }
+  prix() { return this.c.prix() + 0.3 }
   nom() { return this.c.nom() + " + Sucre" }
 }
 
-// Composition : h(g(f(x)))
-let commande = new Cafe()      // f(x)
-commande = new Lait(commande)  // g(f(x))
-commande = new Sucre(commande) // h(g(f(x)))
+let c = new Cafe()
+c = new Lait(c)
+c = new Sucre(c)
+c.prix()  // → 2.8
+c.nom()   // → "Café + Lait + Sucre"
+```
+````
+
+</div>
+
+---
+transition: slide-up
+---
+
+# En Code Complet : Testez !
+
+```ts {monaco-run}
+class Cafe {
+  prix() { return 2 }
+  nom() { return "Café" }
+}
+
+class Lait {
+  constructor(c) { this.c = c }
+  prix() { return this.c.prix() + 0.5 }
+  nom() { return this.c.nom() + " + Lait" }
+}
+
+class Sucre {
+  constructor(c) { this.c = c }
+  prix() { return this.c.prix() + 0.3 }
+  nom() { return this.c.nom() + " + Sucre" }
+}
+
+let commande = new Cafe()
+commande = new Lait(commande)
+commande = new Sucre(commande)
 
 console.log(commande.nom() + " = " + commande.prix() + "€")
-// "Café + Lait + Sucre = 2.8€"
 ```
 
 ---
@@ -225,12 +290,6 @@ class: text-center
 # Merci ! 🎉
 
 ## Questions ?
-
-<div class="mt-8">
-  <a href="https://refactoring.guru/design-patterns/decorator" target="_blank" class="text-blue-500 hover:underline">
-    En savoir plus sur Refactoring Guru
-  </a>
-</div>
 
 <style>
 .slidev-layout {
